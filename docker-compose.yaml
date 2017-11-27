@@ -2,6 +2,21 @@ version: '2.1'
 
 services:
 
+  nginx:
+    container_name: nginx
+    build: ./nginx/
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      users-service:
+        condition: service_started
+      web-service:
+        condition: service_started
+    links:
+      - users-service
+      - web-service
+
   users-db:
     container_name: users-db
     build: https://github.com/rahmonov/flask-microservice-users.git#master:project/db
@@ -27,3 +42,18 @@ services:
         condition: service_healthy
     links:
       - users-db
+
+  web-service:
+    container_name: web-service
+    build:
+      context: https://github.com/rahmonov/flask-microservice-client.git
+      args:
+        - NODE_ENV=development
+        - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+    ports:
+      - '9000:9000' # expose ports - HOST:CONTAINER
+    depends_on:
+      users-service:
+        condition: service_started
+    links:
+      - users-service
