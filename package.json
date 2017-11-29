@@ -1,0 +1,7 @@
+{
+  "name": "flask-microservices-main",
+  "dependencies": {},
+  "devDependencies": {
+    "testcafe": "^0.16.2"
+  }
+}
